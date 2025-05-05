@@ -7,19 +7,19 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'python3 -m venv venv'
-                sh './venv/bin/pip install -r requirements.txt'
-            }
-        }
+   stage('Build Docker Image') {
+    steps {
+        sh 'docker build -t my-python-app .'
+    }
+}
 
-        stage('Run App') {
-            steps {
-                sh './venv/bin/python app.py &'
-                sh 'sleep 5'  // give app time to start
-                sh 'curl http://localhost:5000'
-            }
-        }
+stage('Run App in Docker') {
+    steps {
+        sh 'docker run -d -p 5000:5000 my-python-app'
+        sh 'sleep 5'
+        sh 'curl http://localhost:5000'
+    }
+}
+
     }
 }
